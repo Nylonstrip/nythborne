@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import PageHeader from '@/components/ui/PageHeader'
 import EntryCard from '@/components/ui/EntryCard'
 import styles from './nyths.module.css'
-import type { Nyth } from '@/lib/types'
+import type { Character as Nyth } from '@/lib/types'
 
 export default async function NythsPage() {
   const { data: nyths } = await supabase
