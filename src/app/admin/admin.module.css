@@ -1,0 +1,345 @@
+/* ============================================================
+   SHELL
+   ============================================================ */
+.shell {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+  background: var(--gm-void);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ============================================================
+   BACKGROUND LAYERS
+   ============================================================ */
+.bgBase {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 50%, rgba(139,26,26,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 80% at 85% 20%, rgba(200,168,75,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 90%, rgba(100,50,20,0.05) 0%, transparent 60%),
+    var(--gm-void);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bgGrid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--gm-grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gm-grid-color) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 1;
+  mask-image: radial-gradient(ellipse 100% 100% at 50% 50%, black 40%, transparent 100%);
+}
+
+.bgVignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 30%, rgba(7,6,10,0.85) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bgScanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    var(--gm-scan-color) 3px,
+    var(--gm-scan-color) 4px
+  );
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ============================================================
+   AMBIENT ORBS — slow burning, not twinkling
+   ============================================================ */
+.orb1, .orb2, .orb3 {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(80px);
+  z-index: 1;
+}
+
+.orb1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(139,26,26,0.12) 0%, transparent 70%);
+  top: -100px;
+  right: 10%;
+  animation: orbDrift1 25s ease-in-out infinite;
+}
+
+.orb2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(200,168,75,0.07) 0%, transparent 70%);
+  bottom: 10%;
+  left: 20%;
+  animation: orbDrift2 32s ease-in-out infinite;
+}
+
+.orb3 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(224,92,42,0.06) 0%, transparent 70%);
+  top: 50%;
+  right: 5%;
+  animation: orbDrift3 20s ease-in-out infinite;
+}
+
+@keyframes orbDrift1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.8; }
+  33%       { transform: translate(-40px, 60px) scale(1.1); opacity: 1; }
+  66%       { transform: translate(30px, -30px) scale(0.95); opacity: 0.7; }
+}
+@keyframes orbDrift2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50%       { transform: translate(60px, -40px) scale(1.15); }
+}
+@keyframes orbDrift3 {
+  0%, 100% { transform: translate(0, 0); opacity: 0.6; }
+  40%       { transform: translate(-30px, 50px); opacity: 1; }
+  80%       { transform: translate(20px, -20px); opacity: 0.5; }
+}
+
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
+.sidebar {
+  background: linear-gradient(180deg, rgba(13,11,18,0.97) 0%, rgba(10,8,15,0.99) 100%);
+  border-right: 1px solid var(--gm-border);
+  display: flex;
+  flex-direction: column;
+  padding: 36px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  z-index: 10;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Vertical gold power line */
+.sidebarPowerLine {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--gm-gold-dim) 20%,
+    var(--gm-gold) 50%,
+    var(--gm-gold-dim) 80%,
+    transparent 100%
+  );
+  animation: powerLinePulse 4s ease-in-out infinite;
+}
+
+@keyframes powerLinePulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1; }
+}
+
+/* Logo area */
+.sidebarLogo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px 28px;
+  border-bottom: 1px solid var(--gm-border);
+  margin-bottom: 20px;
+}
+
+.logoEyepiece {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--gm-gold-dim);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: eyePulse 5s ease-in-out infinite;
+}
+
+.logoEyepiece::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(200,168,75,0.15);
+}
+
+.logoEyeInner {
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle, var(--gm-gold) 0%, var(--gm-ember) 60%, transparent 100%);
+  border-radius: 50%;
+  animation: eyeGlow 5s ease-in-out infinite;
+}
+
+@keyframes eyePulse {
+  0%, 100% { border-color: var(--gm-gold-dim); box-shadow: none; }
+  50%       { border-color: var(--gm-gold); box-shadow: 0 0 12px rgba(200,168,75,0.2); }
+}
+
+@keyframes eyeGlow {
+  0%, 100% { opacity: 0.7; transform: scale(1); }
+  50%       { opacity: 1; transform: scale(1.1); }
+}
+
+.logoMain {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--gm-gold);
+  text-align: center;
+}
+
+.logoSub {
+  font-family: var(--font-display);
+  font-size: 8px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gm-text-dim);
+  text-align: center;
+}
+
+/* Nav */
+.sidebarNav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 4px 0;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 11px 24px;
+  text-decoration: none;
+  position: relative;
+  transition: background 0.2s;
+  overflow: hidden;
+}
+
+.navItem::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(200,168,75,0.06) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.navItem:hover::after { opacity: 1; }
+
+.navAccent {
+  display: block;
+  width: 2px;
+  height: 0;
+  background: linear-gradient(180deg, var(--gm-ember), var(--gm-gold));
+  margin-right: 16px;
+  transition: height 0.2s ease, opacity 0.2s;
+  opacity: 0;
+  flex-shrink: 0;
+  border-radius: 1px;
+}
+
+.navItem:hover .navAccent {
+  height: 18px;
+  opacity: 1;
+}
+
+.navLabel {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gm-text-dim);
+  transition: color 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.navItem:hover .navLabel {
+  color: var(--gm-gold);
+}
+
+/* Footer */
+.sidebarFooter {
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footerDivider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gm-border-hi), transparent);
+  margin-bottom: 14px;
+}
+
+.viewSite {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gm-text-dim);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s;
+}
+
+.viewSite:hover { color: var(--gm-gold); }
+
+.logout {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gm-text-faint);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.logout:hover { color: var(--gm-blood); }
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.main {
+  padding: 0;
+  overflow-y: auto;
+  position: relative;
+  z-index: 5;
+  min-height: 100vh;
+}
+
+.mainInner {
+  padding: 52px 60px;
+  animation: contentReveal 0.4s ease both;
+}
+
+@keyframes contentReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

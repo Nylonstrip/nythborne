@@ -1,0 +1,224 @@
+.page {
+  max-width: 1000px;
+}
+
+/* ── Page header ─────────────────────────────────────────── */
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 36px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gm-border);
+  position: relative;
+}
+
+.pageHeader::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 80px;
+  height: 1px;
+  background: var(--gm-gold-dim);
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--gm-gold);
+  text-shadow: 0 0 30px rgba(200,168,75,0.15);
+}
+
+.newBtn {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gm-gold);
+  border: 1px solid var(--gm-border-hi);
+  padding: 10px 22px;
+  text-decoration: none;
+  background: rgba(200,168,75,0.04);
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.newBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(200,168,75,0.08), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.newBtn:hover { background: rgba(200,168,75,0.1); }
+.newBtn:hover::before { opacity: 1; }
+
+/* ── Table / List containers ─────────────────────────────── */
+.tableWrap {
+  border: 1px solid var(--gm-border);
+  overflow: hidden;
+}
+
+/* ── Form pages ──────────────────────────────────────────── */
+.formPage {
+  max-width: 720px;
+}
+
+.formSection {
+  margin-bottom: 40px;
+}
+
+.formSectionTitle {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gm-gold-dim);
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--gm-border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.formSectionTitle::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gm-border), transparent);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.formGridFull {
+  grid-column: 1 / -1;
+}
+
+/* ── Form controls ───────────────────────────────────────── */
+/* These override global input styles for admin context */
+.formPage input,
+.formPage select,
+.formPage textarea {
+  background: rgba(200,168,75,0.02);
+  border-color: var(--gm-border);
+  color: var(--gm-text);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.formPage input:focus,
+.formPage select:focus,
+.formPage textarea:focus {
+  border-color: var(--gm-gold-dim);
+  background: rgba(200,168,75,0.04);
+  outline: none;
+}
+
+/* ── Actions bar ─────────────────────────────────────────── */
+.formActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--gm-border);
+}
+
+.saveBtn {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gm-void);
+  background: var(--gm-gold);
+  border: none;
+  padding: 13px 30px;
+  cursor: pointer;
+  transition: opacity 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.saveBtn:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 20px rgba(200,168,75,0.25);
+}
+
+.saveBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cancelBtn {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gm-text-dim);
+  background: transparent;
+  border: 1px solid var(--gm-border);
+  padding: 13px 22px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.cancelBtn:hover {
+  border-color: var(--gm-border-hi);
+  color: var(--gm-text);
+}
+
+.deleteBtn {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gm-ember);
+  background: transparent;
+  border: 1px solid rgba(224,92,42,0.25);
+  padding: 13px 22px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.deleteBtn:hover {
+  border-color: var(--gm-ember);
+  background: rgba(224,92,42,0.07);
+}
+
+/* ── Status messages ─────────────────────────────────────── */
+.successMsg {
+  color: #6abf69;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.errorMsg {
+  color: var(--gm-ember);
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* ── Admin table rows ────────────────────────────────────── */
+.adminRow {
+  border-bottom: 1px solid var(--gm-border-line);
+  transition: background 0.15s;
+}
+
+.adminRow:hover {
+  background: rgba(200,168,75,0.03);
+}
+
+.adminRow:last-child {
+  border-bottom: none;
+}

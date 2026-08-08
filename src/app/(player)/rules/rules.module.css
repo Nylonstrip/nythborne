@@ -1,0 +1,86 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 48px 80px;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.section {
+  margin-bottom: 56px;
+}
+
+.categoryTitle {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--crystal-1);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ruleList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rule {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 24px 28px;
+  border-left: 3px solid var(--crystal-1);
+}
+
+.ruleTitle {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+}
+
+.ruleContent {
+  font-size: 16px;
+  color: var(--text-dim);
+  line-height: 1.75;
+}
+
+.examples {
+  margin-top: 16px;
+  padding: 14px 18px;
+  background: rgba(168,216,255,0.04);
+  border-left: 2px solid rgba(168,216,255,0.2);
+}
+
+.examplesLabel {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--crystal-1);
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+
+.examples p {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.empty {
+  padding: 80px 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--text-faint);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

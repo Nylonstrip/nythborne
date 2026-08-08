@@ -1,0 +1,220 @@
+.page {
+  max-width: 960px;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.header {
+  margin-bottom: 48px;
+  position: relative;
+}
+
+.headerEyebrow {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--gm-gold-dim);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.headerEyebrow::before {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 1px;
+  background: var(--gm-gold-dim);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--gm-gold);
+  margin-bottom: 10px;
+  text-shadow: 0 0 40px rgba(200,168,75,0.2);
+}
+
+.subtitle {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--gm-text-dim);
+  line-height: 1.6;
+}
+
+/* ── Stat grid ───────────────────────────────────────────── */
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  margin-bottom: 52px;
+  border: 1px solid var(--gm-border);
+  background: var(--gm-border);
+  overflow: hidden;
+}
+
+.statCard {
+  background: var(--gm-panel);
+  padding: 22px 18px;
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.25s;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gm-gold-dim), transparent);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.statCard:hover {
+  background: var(--gm-panel-hi);
+}
+
+.statCard:hover::before {
+  opacity: 1;
+}
+
+.statCount {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--gm-gold);
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(200,168,75,0.25);
+}
+
+.statLabel {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gm-text-dim);
+}
+
+.statDesc {
+  font-size: 11px;
+  color: var(--gm-text-faint);
+  font-style: italic;
+  margin-top: 2px;
+}
+
+/* ── Section wrapper ─────────────────────────────────────── */
+.section {
+  margin-bottom: 44px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gm-gold-dim);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sectionTitle::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gm-border-hi), transparent);
+}
+
+/* ── Action grid ─────────────────────────────────────────── */
+.actionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.actionBtn {
+  background: transparent;
+  border: 1px solid var(--gm-border);
+  color: var(--gm-text-dim);
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 13px 16px;
+  text-decoration: none;
+  text-align: center;
+  position: relative;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+  overflow: hidden;
+}
+
+.actionBtn::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0;
+  background: linear-gradient(0deg, rgba(200,168,75,0.06), transparent);
+  transition: height 0.2s;
+}
+
+.actionBtn:hover {
+  color: var(--gm-gold);
+  border-color: var(--gm-border-hi);
+}
+
+.actionBtn:hover::before {
+  height: 100%;
+}
+
+/* ── Info / lore box ─────────────────────────────────────── */
+.infoBox {
+  background: rgba(200,168,75,0.03);
+  border: 1px solid var(--gm-border);
+  border-left: 2px solid var(--gm-gold-dim);
+  padding: 22px 26px;
+  position: relative;
+}
+
+.infoBox::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 40%;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gm-gold-dim), transparent);
+}
+
+.infoLabel {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gm-gold);
+  margin-bottom: 12px;
+}
+
+.infoText {
+  font-size: 14px;
+  color: var(--gm-text-dim);
+  line-height: 1.8;
+}
+
+.infoText strong {
+  color: var(--gm-text);
+  font-weight: 600;
+}

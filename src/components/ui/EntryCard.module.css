@@ -1,0 +1,88 @@
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent, var(--crystal-1));
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  transition: border-color 0.25s, background 0.25s, transform 0.25s, box-shadow 0.25s;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer sweep on hover */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 20%,
+    rgba(168,216,255,0.06) 50%,
+    transparent 80%
+  );
+  transition: left 0.5s ease;
+  pointer-events: none;
+}
+
+.card:hover::before {
+  left: 150%;
+}
+
+/* Glow on hover */
+.card:hover {
+  border-color: var(--border-bright);
+  background: rgba(20, 28, 53, 0.95);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(168,216,255,0.06);
+}
+
+.tag {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.05em;
+}
+
+.desc {
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--text-dim);
+  line-height: 1.5;
+  flex: 1;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 4px;
+  padding: 3px 10px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: 1px solid var(--accent, var(--crystal-1));
+  color: var(--accent, var(--crystal-1));
+  opacity: 0.7;
+  align-self: flex-start;
+  transition: opacity 0.2s;
+}
+
+.card:hover .badge {
+  opacity: 1;
+}

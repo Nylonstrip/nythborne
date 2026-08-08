@@ -1,0 +1,194 @@
+.shell {
+  min-height: 100vh;
+  background: var(--void);
+  position: relative;
+  overflow: hidden;
+}
+
+.bgStars {
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, rgba(168,216,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 30% 5%,  rgba(168,216,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 65% 30%, rgba(168,216,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 82% 10%, rgba(168,216,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 22% 65%, rgba(168,216,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 75%, rgba(168,216,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 92% 55%, rgba(168,216,255,0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 45% 88%, rgba(168,216,255,0.15) 0%, transparent 100%),
+    radial-gradient(1px 1px at 78% 92%, rgba(168,216,255,0.3) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+  animation: starTwinkle 8s ease-in-out infinite;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.8; }
+  50%       { opacity: 1; }
+}
+
+.bgVignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 100% 100% at 50% 50%, transparent 30%, rgba(8,10,20,0.8) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.bgScanlines {
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(168,216,255,0.012) 3px,
+    rgba(168,216,255,0.012) 4px
+  );
+  pointer-events: none;
+  z-index: 2;
+}
+
+.page {
+  position: relative;
+  z-index: 10;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 48px 40px;
+  animation: pageReveal 0.4s ease both;
+}
+
+@keyframes pageReveal {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--crystal-1), var(--crystal-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.logout {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  text-decoration: none;
+  transition: color 0.2s;
+  margin-top: 4px;
+}
+
+.logout:hover { color: var(--text-dim); }
+
+/* No character state */
+.noChar {
+  border: 1px solid var(--border);
+  padding: 40px;
+  text-align: center;
+}
+
+.noChar p {
+  color: var(--text-dim);
+  font-style: italic;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Cards */
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--crystal-1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.card:hover::before { opacity: 0.6; }
+.card:hover { border-color: var(--border-bright); }
+
+.cardTitle {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--crystal-1);
+  margin-bottom: 20px;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fieldLabel {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.fieldValue {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.7;
+}

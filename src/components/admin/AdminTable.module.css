@@ -1,0 +1,80 @@
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.th {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.tr {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.tr:hover {
+  background: rgba(168,216,255,0.03);
+}
+
+.td {
+  padding: 14px 16px;
+  color: var(--text-dim);
+  vertical-align: middle;
+}
+
+.td:first-child {
+  color: var(--text);
+  font-weight: 400;
+}
+
+.editBtn {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--crystal-1);
+  text-decoration: none;
+  padding: 5px 12px;
+  border: 1px solid rgba(168,216,255,0.25);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.editBtn:hover {
+  border-color: var(--crystal-1);
+  background: rgba(168,216,255,0.07);
+}
+
+.empty {
+  padding: 60px 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--text-faint);
+}
+
+/* Visibility badges */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
+}
+
+.badge.hidden { color: var(--text-faint); }
+.badge.revealed { color: var(--crystal-3); }
+.badge.public { color: var(--crystal-1); }

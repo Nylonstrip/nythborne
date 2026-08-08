@@ -1,0 +1,183 @@
+.shell {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--void);
+  position: relative;
+  overflow: hidden;
+}
+
+.bgStars {
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 25%, rgba(168,216,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 42% 8%,  rgba(168,216,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 73% 35%, rgba(168,216,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 88% 12%, rgba(168,216,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 28% 68%, rgba(168,216,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 80%, rgba(168,216,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 5%  55%, rgba(168,216,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 93% 70%, rgba(168,216,255,0.4) 0%, transparent 100%),
+    radial-gradient(2px 2px at 50% 45%, rgba(168,216,255,0.2) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 90%, rgba(168,216,255,0.3) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bgVignette {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 80% 80% at 50% 50%, transparent 30%, var(--void) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.card {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 400px;
+  padding: 48px 40px;
+  background: rgba(14,18,32,0.92);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  animation: cardReveal 0.5s ease both;
+}
+
+.cardGlow {
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, rgba(168,216,255,0.08), transparent 50%, rgba(122,174,255,0.05));
+  pointer-events: none;
+}
+
+@keyframes cardReveal {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.emblem {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-bright);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: emblemPulse 4s ease-in-out infinite;
+}
+
+.emblemInner {
+  width: 16px;
+  height: 16px;
+  background: radial-gradient(circle, var(--crystal-1) 0%, var(--crystal-2) 60%, transparent 100%);
+  border-radius: 50%;
+}
+
+@keyframes emblemPulse {
+  0%, 100% { box-shadow: none; border-color: var(--border-bright); }
+  50%       { box-shadow: 0 0 16px rgba(168,216,255,0.2); border-color: var(--crystal-1); }
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  background: linear-gradient(135deg, var(--crystal-1), var(--crystal-2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.input {
+  background: rgba(168,216,255,0.03);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 14px;
+  padding: 12px 16px;
+  width: 100%;
+  transition: border-color 0.2s, background 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--border-bright);
+  background: rgba(168,216,255,0.06);
+}
+
+.input::placeholder {
+  color: var(--text-faint);
+}
+
+.error {
+  font-size: 13px;
+  color: #ff7070;
+  font-style: italic;
+  text-align: center;
+}
+
+.btn {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--void);
+  background: var(--crystal-1);
+  border: none;
+  padding: 14px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: opacity 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 20px rgba(168,216,255,0.2);
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}

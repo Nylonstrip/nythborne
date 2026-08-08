@@ -1,0 +1,177 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px 80px;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.eraSection {
+  margin-bottom: 56px;
+}
+
+.eraTitle {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--crystal-2);
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+/* Glowing era label */
+.eraTitle::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 60px;
+  height: 1px;
+  background: var(--crystal-2);
+  box-shadow: 0 0 8px var(--crystal-2);
+}
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+}
+
+.event {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 24px;
+  padding-bottom: 36px;
+  animation: eventEnter 0.5s ease-out both;
+}
+
+.event:nth-child(1) { animation-delay: 0.05s; }
+.event:nth-child(2) { animation-delay: 0.1s; }
+.event:nth-child(3) { animation-delay: 0.15s; }
+.event:nth-child(4) { animation-delay: 0.2s; }
+.event:nth-child(5) { animation-delay: 0.25s; }
+
+@keyframes eventEnter {
+  from { opacity: 0; transform: translateX(-8px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.spine {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 4px;
+}
+
+.spineDiamond {
+  width: 9px; height: 9px;
+  border: 1px solid var(--crystal-2);
+  background: var(--void);
+  rotate: 45deg;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(196,181,255,0.4), 0 0 12px rgba(196,181,255,0.15);
+  transition: box-shadow 0.3s;
+}
+
+.event:hover .spineDiamond {
+  box-shadow: 0 0 10px rgba(196,181,255,0.7), 0 0 20px rgba(196,181,255,0.3);
+}
+
+.spineLine {
+  flex: 1;
+  width: 1px;
+  background: linear-gradient(180deg, rgba(196,181,255,0.3), rgba(196,181,255,0.05));
+  margin-top: 6px;
+}
+
+.eventContent {
+  padding-bottom: 8px;
+}
+
+.eventTitle {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+  transition: color 0.2s;
+}
+
+.event:hover .eventTitle {
+  color: var(--crystal-2);
+}
+
+.eventDesc {
+  font-size: 16px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.eventSignificance {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.eventSignificance span {
+  color: var(--crystal-3);
+  font-style: normal;
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.religiousNote {
+  margin-top: 12px;
+  padding: 14px 18px;
+  border-left: 2px solid rgba(196,181,255,0.25);
+  background: rgba(196,181,255,0.03);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.event:hover .religiousNote {
+  border-color: rgba(196,181,255,0.4);
+  background: rgba(196,181,255,0.05);
+}
+
+.religiousLabel {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--crystal-2);
+  margin-bottom: 6px;
+  opacity: 0.7;
+}
+
+.religiousNote p {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.empty {
+  padding: 80px 0;
+  text-align: center;
+  color: var(--text-faint);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.emptyNote {
+  font-style: italic;
+  font-size: 15px;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

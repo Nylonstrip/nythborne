@@ -1,0 +1,37 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 48px 80px;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.section {
+  margin-bottom: 56px;
+}
+
+.sectionTitle {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.empty {
+  padding: 80px 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--text-faint);
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
