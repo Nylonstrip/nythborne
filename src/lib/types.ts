@@ -103,6 +103,8 @@ export interface Character {
   updated_at: string
 }
 
+export type Nyth = Character
+
 export interface Relic {
   id: string
   name: string
