@@ -31,7 +31,7 @@ export default async function PlayerPage() {
     .eq('user_id', user.id)
     .single()
 
-  const character = profile?.characters as Record<string, string> | null
+  const character = profile?.characters as unknown as Record<string, string> | null
 
   return (
     <div className={styles.shell}>
