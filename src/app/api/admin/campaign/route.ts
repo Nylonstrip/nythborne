@@ -33,6 +33,12 @@ export async function POST(req: NextRequest) {
   if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const body = await req.json()
+
+  // Same protection as PATCH: only one campaign active at a time
+  if (body.is_active === true) {
+    await admin.from('campaigns').update({ is_active: false }).neq('id', '00000000-0000-0000-0000-000000000000')
+  }
+
   const { data, error } = await admin.from('campaigns').insert(body).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json(data)

@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import styles from '@/app/admin/shared.module.css'
 import campaignStyles from './campaign.module.css'
@@ -8,23 +8,36 @@ import { TextareaField, TextField, CheckboxField } from '@/components/admin/Form
 interface Campaign { id: string; name: string; description: string; is_active: boolean; current_session: number }
 interface Session { id: string; session_number: number; title: string; summary: string; live_notes: string }
 
-export default function AdminCampaignPage() {
+function AdminCampaignPageInner() {
   const searchParams = useSearchParams()
   const campaignIdParam = searchParams.get('id')
+  const isNew = searchParams.get('new') === 'true'
 
   const [campaign, setCampaign] = useState<Campaign | null>(null)
   const [sessions, setSessions] = useState<Session[]>([])
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
   const [liveNotes, setLiveNotes] = useState('')
   const [savingNotes, setSavingNotes] = useState(false)
+  const [allCampaigns, setAllCampaigns] = useState<Campaign[]>([])
 
   useEffect(() => {
+    fetch('/api/admin/campaigns').then(r => r.json()).then(d => setAllCampaigns(d.campaigns ?? []))
+  }, [])
+
+  useEffect(() => {
+    if (isNew) {
+      // Force a blank create form, regardless of which campaign is currently active
+      setCampaign(null)
+      setSessions([])
+      setLiveNotes('')
+      return
+    }
     const url = campaignIdParam ? `/api/admin/campaign?id=${campaignIdParam}` : '/api/admin/campaign'
     fetch(url).then(r => r.json()).then(d => {
       if (d.campaign) { setCampaign(d.campaign); setSessions(d.sessions ?? []) }
       if (d.currentSession?.live_notes) setLiveNotes(d.currentSession.live_notes)
     })
-  }, [campaignIdParam])
+  }, [campaignIdParam, isNew])
 
   async function handleCampaignSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -40,7 +53,12 @@ export default function AdminCampaignPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     })
-    if (res.ok) { const d = await res.json(); setCampaign(d); setStatus('success') }
+    if (res.ok) {
+      const d = await res.json()
+      setCampaign(d)
+      setStatus('success')
+      fetch('/api/admin/campaigns').then(r => r.json()).then(dd => setAllCampaigns(dd.campaigns ?? []))
+    }
     else setStatus('error')
   }
 
@@ -79,6 +97,31 @@ export default function AdminCampaignPage() {
     <div className={styles.formPage}>
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Campaign</h1>
+      </div>
+
+      {/* Campaign switcher */}
+      <div className={styles.formSection}>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <select
+            value={isNew ? '' : (campaign?.id ?? '')}
+            onChange={e => {
+              window.location.href = e.target.value
+                ? `/admin/campaign?id=${e.target.value}`
+                : '/admin/campaign'
+            }}
+            className={styles.saveBtn}
+            style={{ background: 'transparent' }}
+          >
+            {allCampaigns.map(c => (
+              <option key={c.id} value={c.id}>
+                {c.name}{c.is_active ? ' (active)' : ''}
+              </option>
+            ))}
+          </select>
+          <a href="/admin/campaign?new=true" className={styles.saveBtn}>
+            + New Campaign
+          </a>
+        </div>
       </div>
 
       {/* Campaign setup */}
@@ -156,5 +199,13 @@ export default function AdminCampaignPage() {
         </>
       )}
     </div>
+  )
+}
+
+export default function AdminCampaignPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AdminCampaignPageInner />
+    </Suspense>
   )
 }
