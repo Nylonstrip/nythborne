@@ -15,6 +15,7 @@ export default async function AdminDashboard() {
     { count: timelineCount },
     { count: ruleCount },
     { count: hiddenCount },
+    { count: pendingCount },
   ] = await Promise.all([
     admin.from('nations').select('*', { count: 'exact', head: true }),
     admin.from('characters').select('*', { count: 'exact', head: true }),
@@ -23,6 +24,7 @@ export default async function AdminDashboard() {
     admin.from('timeline_events').select('*', { count: 'exact', head: true }),
     admin.from('rules').select('*', { count: 'exact', head: true }),
     admin.from('timeline_events').select('*', { count: 'exact', head: true }).eq('visibility', 'hidden'),
+    admin.from('characters').select('*', { count: 'exact', head: true }).eq('approval_status', 'pending'),
   ])
 
   const SECTIONS = [
@@ -31,6 +33,7 @@ export default async function AdminDashboard() {
     { label: 'Relics',     count: relicCount    ?? 0, href: '/admin/relics',     color: 'var(--gm-ember)', desc: `${discoveredRelics ?? 0} of 187 discovered` },
     { label: 'Timeline',   count: timelineCount ?? 0, href: '/admin/timeline',   color: 'var(--gm-gold)',  desc: `${hiddenCount ?? 0} events still hidden` },
     { label: 'Rules',      count: ruleCount     ?? 0, href: '/admin/rules',      color: 'var(--gm-text)',  desc: 'Nyth, Relic, Skill mechanics' },
+    { label: 'Approvals',  count: pendingCount  ?? 0, href: '/admin/approvals',  color: 'var(--gm-ember)', desc: 'Player-submitted characters awaiting review' },
   ]
 
   return (
@@ -64,6 +67,7 @@ export default async function AdminDashboard() {
             { href: '/admin/rules/new',      label: 'Add Rule' },
             { href: '/admin/campaign',       label: 'Manage Campaign' },
             { href: '/admin/connections',    label: 'View Connections' },
+            { href: '/admin/approvals',      label: 'Review Approvals' },
           ].map(({ href, label }) => (
             <Link key={href} href={href} className={styles.actionBtn}>
               + {label}

@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/admin/rules', label: 'Rules' },
   { href: '/admin/campaign', label: 'Campaign' },
   { href: '/admin/connections', label: 'Connections' },
+  { href: '/admin/approvals', label: 'Approvals' },
   { href: '/admin/players', label: 'Players' },
 ]
 
