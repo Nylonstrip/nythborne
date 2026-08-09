@@ -10,6 +10,7 @@ export default function NewCharacterPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    const formData = new FormData(e.currentTarget) // capture BEFORE any await — currentTarget goes stale after
     setStatus('saving')
     setErrorMsg('')
 
@@ -20,8 +21,6 @@ export default function NewCharacterPage() {
       setStatus('error')
       return
     }
-
-    const formData = new FormData(e.currentTarget)
     const payload = {
       name: formData.get('name'),
       is_player_character: true,
