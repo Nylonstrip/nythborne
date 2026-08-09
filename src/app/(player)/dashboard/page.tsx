@@ -53,10 +53,13 @@ export default async function PlayerPage() {
         </header>
 
         {!character ? (
-          <div className={styles.noChar}>
-            <p>Your character has not been assigned yet. The All Mother is still writing your story.</p>
-          </div>
-        ) : (
+      <div className={styles.noChar}>
+        <p>Your character has not been assigned yet. The All Mother is still writing your story.</p>
+        <a href="/characters/new" className={styles.logout}>
+          Create Your Character
+        </a>
+      </div>
+      ) : (
           <div className={styles.grid}>
 
             {/* Identity */}
