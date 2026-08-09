@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createPlayerClient } from '@/lib/supabase'
-import styles from '../login/login.module.css'
+import styles from '../login.module.css'
 
 export default function PlayerSignup() {
   const router = useRouter()
