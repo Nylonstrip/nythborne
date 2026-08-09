@@ -16,8 +16,6 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   const admin = createAdminClient()
   const updates: Record<string, unknown> = { approval_status }
-  // When approving, also make it visible to other players by default.
-  // Adjust this if you want approved characters to stay 'hidden' until you set visibility manually.
   if (approval_status === 'approved') updates.visibility = 'revealed'
 
   const { data, error } = await admin
@@ -28,5 +26,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
+
+  // On rejection, unlink it from the player's profile so they're free to submit a new one.
+  // Without this, the player would be permanently stuck — the submission policy blocks
+  // a second attempt as long as their profile still points at any character.
+  if (approval_status === 'rejected') {
+    await admin
+      .from('player_profiles')
+      .update({ character_id: null })
+      .eq('character_id', params.id)
+  }
+
   return NextResponse.json(data)
 }

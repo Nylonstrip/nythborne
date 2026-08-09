@@ -8,9 +8,8 @@ export default async function PlayerPage() {
   const supabase = await createPlayerServerClient()
 
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/player/login')
+  if (!user) redirect('/login')
 
-  // Fetch player profile + character
   const { data: profile } = await supabase
     .from('player_profiles')
     .select(`
@@ -25,13 +24,15 @@ export default async function PlayerPage() {
         manifestation_name,
         manifestation_description,
         crystalline_form,
-        overuse_effects
+        overuse_effects,
+        approval_status
       )
     `)
     .eq('user_id', user.id)
     .single()
 
   const character = profile?.characters as unknown as Record<string, string> | null
+  const approvalStatus = character?.approval_status
 
   return (
     <div className={styles.shell}>
@@ -53,13 +54,24 @@ export default async function PlayerPage() {
         </header>
 
         {!character ? (
-      <div className={styles.noChar}>
-        <p>Your character has not been assigned yet. The All Mother is still writing your story.</p>
-        <a href="/characters/new" className={styles.logout}>
-          Create Your Character
-        </a>
-      </div>
-      ) : (
+          <div className={styles.noChar}>
+            <p>Your character has not been assigned yet. The All Mother is still writing your story.</p>
+            <a href="/characters/new" className={styles.logout}>
+              Create Your Character
+            </a>
+          </div>
+        ) : approvalStatus === 'pending' ? (
+          <div className={styles.noChar}>
+            <p>Your character &quot;{character.name}&quot; is awaiting the GM&apos;s approval. Check back soon.</p>
+          </div>
+        ) : approvalStatus === 'rejected' ? (
+          <div className={styles.noChar}>
+            <p>Your last submission wasn&apos;t approved. You&apos;re free to try again.</p>
+            <a href="/characters/new" className={styles.logout}>
+              Submit a New Character
+            </a>
+          </div>
+        ) : (
           <div className={styles.grid}>
 
             {/* Identity */}
