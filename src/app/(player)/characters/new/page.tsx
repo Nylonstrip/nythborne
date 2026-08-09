@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createPlayerClient } from '@/lib/supabase'
-import styles from './character_new.module.css'
 
 export default function NewCharacterPage() {
   const router = useRouter()
@@ -27,6 +26,7 @@ export default function NewCharacterPage() {
       name: formData.get('name'),
       is_player_character: true,
       approval_status: 'pending',
+      submitted_by: user.id, // <-- new: lets RLS allow reading this row back immediately
       wish: formData.get('wish'),
       manifestation_name: formData.get('manifestation_name'),
       manifestation_description: formData.get('manifestation_description') || null,
@@ -62,54 +62,31 @@ export default function NewCharacterPage() {
   }
 
   return (
-    <div className={styles.shell}>
-      <div className={styles.bgStars} aria-hidden="true" />
-      <div className={styles.bgVignette} aria-hidden="true" />
+    <div>
+      <h1>Submit Your Character</h1>
+      <p>Your submission will be reviewed by the GM before it appears in the world.</p>
 
-      <div className={styles.page}>
-        <header className={styles.header}>
-          <span className={styles.eyebrow}>Astraea</span>
-          <h1 className={styles.title}>Submit Your Character</h1>
-          <p className={styles.subtitle}>Your submission will be reviewed by the GM before it appears in the world.</p>
-        </header>
+      <form onSubmit={handleSubmit}>
+        <label>Name</label>
+        <input type="text" name="name" required />
 
-        <div className={styles.card}>
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.field}>
-              <label className={styles.label}>Name</label>
-              <input type="text" name="name" className={styles.input} required />
-            </div>
+        <label>Wish (what drives them)</label>
+        <input type="text" name="wish" required />
 
-            <div className={styles.field}>
-              <label className={styles.label}>Wish</label>
-              <p className={styles.hint}>What drives them — the core want behind everything they do.</p>
-              <input type="text" name="wish" className={styles.input} required />
-            </div>
+        <label>Manifestation Name</label>
+        <input type="text" name="manifestation_name" required />
 
-            <div className={styles.field}>
-              <label className={styles.label}>Manifestation Name</label>
-              <input type="text" name="manifestation_name" className={styles.input} required />
-            </div>
+        <label>Manifestation Description</label>
+        <textarea name="manifestation_description" rows={3} />
 
-            <div className={styles.field}>
-              <label className={styles.label}>Manifestation Description</label>
-              <p className={styles.hint}>What it looks like and what it does.</p>
-              <textarea name="manifestation_description" rows={3} className={styles.textarea} />
-            </div>
+        <label>Background</label>
+        <textarea name="background" rows={4} />
 
-            <div className={styles.field}>
-              <label className={styles.label}>Background</label>
-              <textarea name="background" rows={5} className={styles.textarea} />
-            </div>
-
-            {status === 'error' && <p className={styles.error}>{errorMsg}</p>}
-
-            <button type="submit" className={styles.btn} disabled={status === 'saving'}>
-              {status === 'saving' ? 'Submitting...' : 'Submit for Approval'}
-            </button>
-          </form>
-        </div>
-      </div>
+        <button type="submit" disabled={status === 'saving'}>
+          {status === 'saving' ? 'Submitting...' : 'Submit for Approval'}
+        </button>
+        {status === 'error' && <p style={{ color: 'red' }}>{errorMsg}</p>}
+      </form>
     </div>
   )
 }
