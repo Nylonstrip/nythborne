@@ -79,6 +79,9 @@ export default function PlayerLogin() {
             {loading ? 'Entering...' : 'Enter Astraea'}
           </button>
         </form>
+        <p style={{ textAlign: 'center', marginTop: '16px' }}>
+          <a href="/login/signup">New here? Create an account</a>
+        </p>
       </div>
     </div>
   )

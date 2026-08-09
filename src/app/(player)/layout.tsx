@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createPlayerServerClient } from '@/lib/supabase-server'
+import Link from 'next/link'
+import styles from './player-nav.module.css'
 
 export default async function PlayerLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createPlayerServerClient()
@@ -7,5 +9,21 @@ export default async function PlayerLayout({ children }: { children: React.React
 
   if (!user) redirect('/login')
 
-  return <>{children}</>
+  return (
+    <div className={styles.wrap}>
+      <nav className={styles.nav}>
+        <Link href="/dashboard" className={styles.brand}>Astraea</Link>
+        <div className={styles.links}>
+          <Link href="/dashboard">Dashboard</Link>
+          <Link href="/nations">Nations</Link>
+          <Link href="/relics">Relics</Link>
+          <Link href="/rules">Rules</Link>
+          <Link href="/history">History</Link>
+          <Link href="/world">World</Link>
+          <Link href="/campaign">Campaign</Link>
+        </div>
+      </nav>
+      <main>{children}</main>
+    </div>
+  )
 }

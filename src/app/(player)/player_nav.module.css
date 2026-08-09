@@ -1,0 +1,40 @@
+.wrap {
+  min-height: 100vh;
+  background: #0a0a12;
+  color: #e5e5f0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brand {
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #b8b8ff;
+  text-decoration: none;
+}
+
+.links {
+  display: flex;
+  gap: 24px;
+}
+
+.links a {
+  color: #9a9ab5;
+  text-decoration: none;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: color 0.15s;
+}
+
+.links a:hover {
+  color: #e5e5f0;
+}
