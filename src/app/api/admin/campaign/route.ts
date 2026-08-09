@@ -2,17 +2,31 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-admin'
 import { cookies } from 'next/headers'
 
-function isAuthenticated() { return cookies().get('gm_session')?.value === 'authenticated' }
+function isAuthenticated() {
+  return cookies().get('gm_session')?.value === 'authenticated'
+}
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
-  const { data: campaigns } = await admin.from('campaigns').select('*').eq('is_active', true).limit(1)
+  const id = req.nextUrl.searchParams.get('id')
+
+  let campaignQuery = admin.from('campaigns').select('*')
+  campaignQuery = id ? campaignQuery.eq('id', id) : campaignQuery.eq('is_active', true)
+  const { data: campaigns } = await campaignQuery.limit(1)
   const campaign = campaigns?.[0] ?? null
+
   if (!campaign) return NextResponse.json({ campaign: null, sessions: [] })
-  const { data: sessions } = await admin.from('sessions').select('*').eq('campaign_id', campaign.id).order('session_number')
-  const currentSession = sessions?.[sessions.length - 1] ?? null
-  return NextResponse.json({ campaign, sessions, currentSession })
+
+  const { data: sessions } = await admin
+    .from('sessions')
+    .select('*')
+    .eq('campaign_id', campaign.id)
+    .order('session_number', { ascending: true })
+
+  const currentSession = sessions && sessions.length > 0 ? sessions[sessions.length - 1] : null
+
+  return NextResponse.json({ campaign, sessions: sessions ?? [], currentSession })
 }
 
 export async function POST(req: NextRequest) {

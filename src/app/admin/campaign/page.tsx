@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import styles from '@/app/admin/shared.module.css'
 import campaignStyles from './campaign.module.css'
 import { TextareaField, TextField, CheckboxField } from '@/components/admin/FormFields'
@@ -8,6 +9,9 @@ interface Campaign { id: string; name: string; description: string; is_active: b
 interface Session { id: string; session_number: number; title: string; summary: string; live_notes: string }
 
 export default function AdminCampaignPage() {
+  const searchParams = useSearchParams()
+  const campaignIdParam = searchParams.get('id')
+
   const [campaign, setCampaign] = useState<Campaign | null>(null)
   const [sessions, setSessions] = useState<Session[]>([])
   const [status, setStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle')
@@ -15,11 +19,12 @@ export default function AdminCampaignPage() {
   const [savingNotes, setSavingNotes] = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/campaign').then(r => r.json()).then(d => {
+    const url = campaignIdParam ? `/api/admin/campaign?id=${campaignIdParam}` : '/api/admin/campaign'
+    fetch(url).then(r => r.json()).then(d => {
       if (d.campaign) { setCampaign(d.campaign); setSessions(d.sessions ?? []) }
       if (d.currentSession?.live_notes) setLiveNotes(d.currentSession.live_notes)
     })
-  }, [])
+  }, [campaignIdParam])
 
   async function handleCampaignSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
