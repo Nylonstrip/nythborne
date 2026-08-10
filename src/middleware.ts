@@ -8,6 +8,15 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl
   let response = NextResponse.next({ request: req })
 
+  // ── TEMPORARY DEBUG LOGGING ──────────────────────────────────────────────
+  if (pathname.startsWith('/admin')) {
+    console.log('[MW-DEBUG] path:', pathname + req.nextUrl.search)
+    console.log('[MW-DEBUG] method:', req.method)
+    console.log('[MW-DEBUG] raw cookie header:', req.headers.get('cookie'))
+    console.log('[MW-DEBUG] gm_session cookie:', req.cookies.get('gm_session')?.value)
+  }
+  // ──────────────────────────────────────────────────────────────────────────
+
   // ── GM Admin protection (existing cookie-based system) ──────────────────
   if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
     const session = req.cookies.get('gm_session')
