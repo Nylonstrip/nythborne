@@ -21,6 +21,7 @@ interface CharacterData {
   unspent_points: number
   traits: string[]
   approval_status: string
+  avatar_url: string | null
 }
 
 interface CampaignData {
@@ -49,11 +50,15 @@ export default function CharacterPage() {
   const [currentSession, setCurrentSession] = useState<SessionData | null>(null)
   const [connected, setConnected] = useState(false)
   const [allocating, setAllocating] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState('')
 
   const fetchAll = useCallback(async () => {
     const supabase = createPlayerClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
+    setUserId(user.id)
 
     const { data: profile } = await supabase
       .from('player_profiles')
@@ -131,6 +136,49 @@ export default function CharacterPage() {
     setAllocating(false)
   }
 
+  async function handleAvatarUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file || !character || !userId) return
+
+    setUploading(true)
+    setUploadError('')
+    const supabase = createPlayerClient()
+
+    const ext = file.name.split('.').pop()
+    const path = `${userId}/avatar.${ext}`
+
+    const { error: uploadErr } = await supabase.storage
+      .from('character-portraits')
+      .upload(path, file, { upsert: true })
+
+    if (uploadErr) {
+      setUploadError(uploadErr.message)
+      setUploading(false)
+      return
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('character-portraits')
+      .getPublicUrl(path)
+
+    // Cache-bust so the new image shows immediately instead of a stale cached one
+    const bustedUrl = `${publicUrl}?t=${Date.now()}`
+
+    const { data, error: updateErr } = await supabase
+      .from('characters')
+      .update({ avatar_url: bustedUrl })
+      .eq('id', character.id)
+      .select()
+      .single()
+
+    if (updateErr) {
+      setUploadError(updateErr.message)
+    } else if (data) {
+      setCharacter(data as unknown as CharacterData)
+    }
+    setUploading(false)
+  }
+
   if (!hasProfile) {
     return <div className={styles.page}><p className={styles.empty}>Loading...</p></div>
   }
@@ -181,6 +229,30 @@ export default function CharacterPage() {
       <div className={styles.layout}>
         {/* Main sheet */}
         <div className={styles.sheet}>
+          <section className={styles.panel}>
+            <span className={styles.panelLabel}>Portrait</span>
+            <div className={styles.avatarRow}>
+              {character.avatar_url ? (
+                <img src={character.avatar_url} alt={character.name} className={styles.avatarImg} />
+              ) : (
+                <div className={styles.avatarPlaceholder}>No image</div>
+              )}
+              <div>
+                <label className={styles.actionBtn} style={{ cursor: 'pointer' }}>
+                  {uploading ? 'Uploading...' : character.avatar_url ? 'Change Portrait' : 'Upload Portrait'}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarUpload}
+                    disabled={uploading}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                {uploadError && <p className={styles.uploadError}>{uploadError}</p>}
+              </div>
+            </div>
+          </section>
+
           <section className={styles.panel}>
             <span className={styles.panelLabel}>Level {character.level}</span>
             {character.unspent_points > 0 && (

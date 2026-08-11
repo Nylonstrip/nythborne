@@ -171,6 +171,39 @@
   line-height: 1.7;
 }
 
+.avatarRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.avatarImg {
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid var(--border-bright);
+}
+
+.avatarPlaceholder {
+  width: 96px;
+  height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--text-faint);
+  text-align: center;
+}
+
+.uploadError {
+  font-size: 12px;
+  color: #e05c5c;
+  margin-top: 6px;
+}
+
 .empty {
   padding: 80px 0;
   text-align: center;
