@@ -105,6 +105,25 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>{isNew ? 'New Character' : `Edit: ${character.name}`}</h1>
       </div>
+
+      {!isNew && character && (
+        <div style={{ marginBottom: '20px' }}>
+          {character.avatar_url ? (
+            <img
+              src={character.avatar_url}
+              alt={character.name}
+              style={{ width: '96px', height: '96px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #444' }}
+            />
+          ) : (
+            <div style={{
+              width: '96px', height: '96px', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: '1px dashed #444', borderRadius: '6px', fontSize: '11px', color: '#888', textAlign: 'center',
+            }}>
+              No portrait uploaded
+            </div>
+          )}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
 
         {/* Identity */}
@@ -144,13 +163,14 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
                 )}
               </div>
               <div className={styles.formGridFull}>
-                <label htmlFor="new_trait">New Trait (optional)</label>
+                <label htmlFor="new_trait" style={{ display: 'block', marginBottom: '6px' }}>New Trait (optional)</label>
                 <input
                   id="new_trait"
                   type="text"
                   value={newTrait}
                   onChange={e => setNewTrait(e.target.value)}
                   placeholder="e.g. Read the Room"
+                  style={{ width: '100%', padding: '8px 10px', background: 'transparent', border: '1px solid #444', color: 'inherit', borderRadius: '4px' }}
                 />
               </div>
             </div>

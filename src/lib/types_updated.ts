@@ -107,6 +107,7 @@ export interface Character {
   unspent_points: number
   traits: string[]
   approval_status: 'pending' | 'approved' | 'rejected'
+  avatar_url: string | null
   created_at: string
   updated_at: string
 }
