@@ -19,6 +19,10 @@ export default function NythForm({ nyth }: { nyth?: Nyth }) {
   const [errorMsg, setErrorMsg] = useState('')
   const isNew = !nyth
 
+  const [newTrait, setNewTrait] = useState('')
+  const [levelingUp, setLevelingUp] = useState(false)
+  const [levelUpMsg, setLevelUpMsg] = useState('')
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setStatus('saving')
@@ -54,6 +58,26 @@ export default function NythForm({ nyth }: { nyth?: Nyth }) {
     router.push('/admin/nyths')
   }
 
+  async function handleGrantLevelUp() {
+    if (!nyth) return
+    setLevelingUp(true)
+    setLevelUpMsg('')
+    const res = await fetch(`/api/admin/characters/${nyth.id}/levelup`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ newTrait: newTrait || null }),
+    })
+    if (res.ok) {
+      setLevelUpMsg('Level up granted!')
+      setNewTrait('')
+      router.refresh()
+    } else {
+      const d = await res.json()
+      setLevelUpMsg(d.error ?? 'Something went wrong.')
+    }
+    setLevelingUp(false)
+  }
+
   return (
     <div className={styles.formPage}>
       <div className={styles.pageHeader}>
@@ -73,6 +97,44 @@ export default function NythForm({ nyth }: { nyth?: Nyth }) {
             </div>
           </div>
         </div>
+
+        {!isNew && nyth && (
+          <div className={styles.formSection}>
+            <h2 className={styles.formSectionTitle}>Progression</h2>
+            <div className={styles.formGrid}>
+              <div className={styles.formGridFull}>
+                <p>
+                  Level {nyth.level ?? 1} — Mental {nyth.mental ?? 0}/5,
+                  {' '}Resonance {nyth.resonance ?? 0}/5, Alignment {nyth.alignment ?? 0}/5
+                </p>
+                {(nyth.unspent_points ?? 0) > 0 && (
+                  <p>{nyth.unspent_points} unspent point(s) waiting for the player to allocate.</p>
+                )}
+                {nyth.traits && nyth.traits.length > 0 && (
+                  <ul>
+                    {nyth.traits.map((t, i) => <li key={i}>{t}</li>)}
+                  </ul>
+                )}
+              </div>
+              <div className={styles.formGridFull}>
+                <label htmlFor="new_trait">New Trait (optional)</label>
+                <input
+                  id="new_trait"
+                  type="text"
+                  value={newTrait}
+                  onChange={e => setNewTrait(e.target.value)}
+                  placeholder="e.g. Read the Room"
+                />
+              </div>
+            </div>
+            <div className={styles.formActions} style={{ marginTop: '12px' }}>
+              <button type="button" className={styles.saveBtn} onClick={handleGrantLevelUp} disabled={levelingUp}>
+                {levelingUp ? 'Granting...' : 'Grant Level Up'}
+              </button>
+              {levelUpMsg && <span className={styles.successMsg}>{levelUpMsg}</span>}
+            </div>
+          </div>
+        )}
 
         <div className={styles.formSection}>
           <h2 className={styles.formSectionTitle}>Manifestation</h2>

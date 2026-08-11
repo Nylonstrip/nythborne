@@ -1,0 +1,197 @@
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 48px 80px;
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.liveTag {
+  font-size: 11px;
+  color: var(--crystal-3);
+  letter-spacing: 0.1em;
+  margin-bottom: 24px;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+@media (max-width: 800px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 24px;
+}
+
+.panel, .sidebarPanel {
+  background: var(--panel);
+  border: 1px solid var(--border-bright);
+  padding: 20px 24px;
+}
+
+.sidebarPanel {
+  border: 1px solid var(--border);
+}
+
+.panelLabel {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--crystal-3);
+  margin-bottom: 12px;
+}
+
+.pointsNotice {
+  font-size: 13px;
+  color: var(--crystal-3);
+  margin-bottom: 16px;
+  font-style: italic;
+}
+
+.statRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid var(--border);
+}
+
+.statRow:first-of-type {
+  border-top: none;
+}
+
+.statInfo {
+  flex: 1;
+  min-width: 100px;
+}
+
+.statLabel {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.04em;
+}
+
+.statDesc {
+  display: block;
+  font-size: 11px;
+  color: var(--text-faint);
+  margin-top: 2px;
+}
+
+.statBar {
+  display: flex;
+  gap: 4px;
+}
+
+.pipFilled, .pipEmpty {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid var(--border-bright);
+}
+
+.pipFilled {
+  background: var(--crystal-3);
+}
+
+.pipEmpty {
+  background: transparent;
+}
+
+.allocateBtn {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  background: transparent;
+  border: 1px solid var(--crystal-3);
+  color: var(--crystal-3);
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+.allocateBtn:hover {
+  background: var(--crystal-3);
+  color: var(--bg, #0a0a12);
+}
+
+.allocateBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.traitList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.traitList li {
+  font-size: 14px;
+  color: var(--text);
+  padding-left: 14px;
+  position: relative;
+}
+
+.traitList li::before {
+  content: '◆';
+  position: absolute;
+  left: 0;
+  color: var(--crystal-3);
+  font-size: 9px;
+  top: 5px;
+}
+
+.bodyText {
+  font-size: 15px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+.empty {
+  padding: 80px 0;
+  text-align: center;
+  font-style: italic;
+  color: var(--text-faint);
+}
+
+.actionBtn {
+  display: inline-block;
+  margin-top: 16px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-bright);
+  color: var(--text);
+  padding: 10px 20px;
+  text-decoration: none;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}

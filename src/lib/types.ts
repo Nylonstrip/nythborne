@@ -99,6 +99,14 @@ export interface Character {
   background: string | null
   visibility: Visibility
   gm_notes: string | null
+  // Progression / stats
+  level: number
+  mental: number
+  resonance: number
+  alignment: number
+  unspent_points: number
+  traits: string[]
+  approval_status: 'pending' | 'approved' | 'rejected'
   created_at: string
   updated_at: string
 }
