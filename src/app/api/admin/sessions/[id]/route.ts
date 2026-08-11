@@ -10,7 +10,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const body = await req.json()
-  const { data, error } = await admin.from('sessions').update(body).eq('id', params.id).select().single()
+
+  const { data, error } = await admin
+    .from('sessions')
+    .update(body)
+    .eq('id', params.id)
+    .select()
+    .single()
+
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   return NextResponse.json(data)
 }
