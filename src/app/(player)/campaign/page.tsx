@@ -1,29 +1,63 @@
-export const dynamic = 'force-dynamic'
+'use client'
 
-import { supabase } from '@/lib/supabase'
+import { useEffect, useState, useCallback } from 'react'
+import { createPlayerClient } from '@/lib/supabase'
 import PageHeader from '@/components/ui/PageHeader'
 import styles from './campaign.module.css'
 import type { Campaign, Session } from '@/lib/types'
 
-export default async function CampaignPage() {
-  const { data: campaigns } = await supabase
-    .from('campaigns')
-    .select('*')
-    .eq('is_active', true)
-    .limit(1)
+export default function CampaignPage() {
+  const [activeCampaign, setActiveCampaign] = useState<Campaign | null>(null)
+  const [sessions, setSessions] = useState<Session[]>([])
+  const [connected, setConnected] = useState(false)
 
-  const activeCampaign: Campaign | null = campaigns?.[0] ?? null
+  const fetchData = useCallback(async () => {
+    const supabase = createPlayerClient()
 
-  const { data: sessions } = activeCampaign
-    ? await supabase
+    const { data: campaigns } = await supabase
+      .from('campaigns')
+      .select('*')
+      .eq('is_active', true)
+      .limit(1)
+
+    const campaign: Campaign | null = campaigns?.[0] ?? null
+    setActiveCampaign(campaign)
+
+    if (campaign) {
+      const { data: sessionRows } = await supabase
         .from('sessions')
         .select('*')
-        .eq('campaign_id', activeCampaign.id)
+        .eq('campaign_id', campaign.id)
         .order('session_number', { ascending: false })
-    : { data: null }
+      setSessions(sessionRows ?? [])
+    } else {
+      setSessions([])
+    }
+  }, [])
 
-  const currentSession: Session | null = sessions?.[0] ?? null
-  const pastSessions = sessions?.slice(1) ?? []
+  useEffect(() => {
+    fetchData()
+
+    const supabase = createPlayerClient()
+    const channel = supabase
+      .channel('campaign-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'campaigns' }, () => {
+        fetchData()
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'sessions' }, () => {
+        fetchData()
+      })
+      .subscribe(status => {
+        setConnected(status === 'SUBSCRIBED')
+      })
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [fetchData])
+
+  const currentSession: Session | null = sessions[0] ?? null
+  const pastSessions = sessions.slice(1)
 
   return (
     <div className={styles.page}>
@@ -32,6 +66,12 @@ export default async function CampaignPage() {
         title={activeCampaign?.name ?? 'Campaign'}
         description={activeCampaign?.description ?? 'Follow along as the story unfolds.'}
       />
+
+      {connected && (
+        <p style={{ fontSize: '11px', color: 'var(--crystal-3)', letterSpacing: '0.1em', marginBottom: '16px' }}>
+          ⬤ Live — updates automatically, no refresh needed
+        </p>
+      )}
 
       {!activeCampaign && (
         <div className={styles.empty}>
