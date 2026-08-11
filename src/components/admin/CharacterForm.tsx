@@ -82,6 +82,24 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
     setLevelingUp(false)
   }
 
+  async function handleResetProgression() {
+    if (!character) return
+    if (!confirm(`Reset "${character.name}" back to Level 1 with no points or traits? This can't be undone.`)) return
+    setLevelingUp(true)
+    setLevelUpMsg('')
+    const res = await fetch(`/api/admin/characters/${character.id}/reset`, {
+      method: 'PATCH',
+    })
+    if (res.ok) {
+      setLevelUpMsg('Progression reset.')
+      router.refresh()
+    } else {
+      const d = await res.json()
+      setLevelUpMsg(d.error ?? 'Something went wrong.')
+    }
+    setLevelingUp(false)
+  }
+
   return (
     <div className={styles.formPage}>
       <div className={styles.pageHeader}>
@@ -139,6 +157,9 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
             <div className={styles.formActions} style={{ marginTop: '12px' }}>
               <button type="button" className={styles.saveBtn} onClick={handleGrantLevelUp} disabled={levelingUp}>
                 {levelingUp ? 'Granting...' : 'Grant Level Up'}
+              </button>
+              <button type="button" className={styles.deleteBtn} onClick={handleResetProgression} disabled={levelingUp}>
+                Reset Progression
               </button>
               {levelUpMsg && <span className={styles.successMsg}>{levelUpMsg}</span>}
             </div>
