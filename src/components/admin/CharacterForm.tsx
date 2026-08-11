@@ -23,6 +23,10 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
   )
   const isNew = !character
 
+  const [newTrait, setNewTrait] = useState('')
+  const [levelingUp, setLevelingUp] = useState(false)
+  const [levelUpMsg, setLevelUpMsg] = useState('')
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setStatus('saving')
@@ -58,6 +62,26 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
     router.push('/admin/characters')
   }
 
+  async function handleGrantLevelUp() {
+    if (!character) return
+    setLevelingUp(true)
+    setLevelUpMsg('')
+    const res = await fetch(`/api/admin/characters/${character.id}/levelup`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ newTrait: newTrait || null }),
+    })
+    if (res.ok) {
+      setLevelUpMsg('Level up granted!')
+      setNewTrait('')
+      router.refresh()
+    } else {
+      const d = await res.json()
+      setLevelUpMsg(d.error ?? 'Something went wrong.')
+    }
+    setLevelingUp(false)
+  }
+
   return (
     <div className={styles.formPage}>
       <div className={styles.pageHeader}>
@@ -81,6 +105,45 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
             </div>
           </div>
         </div>
+
+        {/* Progression — applies to any character, Nyth or not */}
+        {!isNew && character && (
+          <div className={styles.formSection}>
+            <h2 className={styles.formSectionTitle}>Progression</h2>
+            <div className={styles.formGrid}>
+              <div className={styles.formGridFull}>
+                <p>
+                  Level {character.level ?? 1} — Mental {character.mental ?? 0}/5,
+                  {' '}Resonance {character.resonance ?? 0}/5, Alignment {character.alignment ?? 0}/5
+                </p>
+                {(character.unspent_points ?? 0) > 0 && (
+                  <p>{character.unspent_points} unspent point(s) waiting for the player to allocate.</p>
+                )}
+                {character.traits && character.traits.length > 0 && (
+                  <ul>
+                    {character.traits.map((t, i) => <li key={i}>{t}</li>)}
+                  </ul>
+                )}
+              </div>
+              <div className={styles.formGridFull}>
+                <label htmlFor="new_trait">New Trait (optional)</label>
+                <input
+                  id="new_trait"
+                  type="text"
+                  value={newTrait}
+                  onChange={e => setNewTrait(e.target.value)}
+                  placeholder="e.g. Read the Room"
+                />
+              </div>
+            </div>
+            <div className={styles.formActions} style={{ marginTop: '12px' }}>
+              <button type="button" className={styles.saveBtn} onClick={handleGrantLevelUp} disabled={levelingUp}>
+                {levelingUp ? 'Granting...' : 'Grant Level Up'}
+              </button>
+              {levelUpMsg && <span className={styles.successMsg}>{levelUpMsg}</span>}
+            </div>
+          </div>
+        )}
 
         {/* Nyth toggle */}
         <div className={styles.formSection}>
