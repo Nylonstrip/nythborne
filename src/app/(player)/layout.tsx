@@ -16,6 +16,7 @@ export default async function PlayerLayout({ children }: { children: React.React
         <div className={styles.links}>
           <Link href="/dashboard">Dashboard</Link>
           <Link href="/character">Character</Link>
+          <Link href="/play">Play</Link>
           <Link href="/nations">Nations</Link>
           <Link href="/relics">Relics</Link>
           <Link href="/rules">Rules</Link>

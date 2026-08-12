@@ -3,6 +3,7 @@ import styles from './admin.module.css'
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Dashboard' },
+  { href: '/admin/play', label: 'Play' },
   { href: '/admin/nations', label: 'Nations' },
   { href: '/admin/characters', label: 'Characters' },
   { href: '/admin/relics', label: 'Relics' },
@@ -17,20 +18,16 @@ const NAV_ITEMS = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={styles.shell}>
-
-      {/* Atmospheric background layers */}
       <div className={styles.bgBase} aria-hidden="true" />
       <div className={styles.bgGrid} aria-hidden="true" />
       <div className={styles.bgVignette} aria-hidden="true" />
       <div className={styles.bgScanlines} aria-hidden="true" />
 
-      {/* Floating sigil orbs */}
       <div className={styles.orb1} aria-hidden="true" />
       <div className={styles.orb2} aria-hidden="true" />
       <div className={styles.orb3} aria-hidden="true" />
 
       <aside className={styles.sidebar}>
-        {/* Power line accent */}
         <div className={styles.sidebarPowerLine} aria-hidden="true" />
 
         <div className={styles.sidebarLogo}>
