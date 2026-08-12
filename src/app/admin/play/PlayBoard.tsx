@@ -30,6 +30,7 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
   const [participants, setParticipants] = useState<Participant[]>([])
   const [available, setAvailable] = useState<CharacterMini[]>([])
   const [selectedToAdd, setSelectedToAdd] = useState('')
+  const [addError, setAddError] = useState('')
   const [busy, setBusy] = useState(false)
 
   const fetchParticipants = useCallback(async () => {
@@ -54,14 +55,20 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
   async function addToEncounter() {
     if (!campaign || !selectedToAdd) return
     setBusy(true)
-    await fetch('/api/admin/encounter', {
+    setAddError('')
+    const res = await fetch('/api/admin/encounter', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ campaign_id: campaign.id, character_id: selectedToAdd }),
     })
-    setSelectedToAdd('')
-    await fetchParticipants()
-    await fetchAvailable()
+    if (res.ok) {
+      setSelectedToAdd('')
+      await fetchParticipants()
+      await fetchAvailable()
+    } else {
+      const d = await res.json()
+      setAddError(d.error ?? 'Something went wrong.')
+    }
     setBusy(false)
   }
 
@@ -191,6 +198,7 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
             Add
           </button>
         </div>
+        {addError && <p style={{ color: '#e05c5c', fontSize: '13px', marginTop: '8px' }}>{addError}</p>}
       </div>
 
       {/* Roster */}

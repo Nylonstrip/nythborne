@@ -27,6 +27,21 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient()
   const body = await req.json()
 
+  // Mandatory: a character must be revealed (or public) before it can enter an
+  // encounter, so nothing hidden ever reaches the player-facing Play page.
+  const { data: char, error: charError } = await admin
+    .from('characters')
+    .select('visibility')
+    .eq('id', body.character_id)
+    .single()
+
+  if (charError || !char) {
+    return NextResponse.json({ error: 'Character not found' }, { status: 400 })
+  }
+  if (char.visibility === 'hidden') {
+    return NextResponse.json({ error: 'This character is still Hidden — reveal them before adding to an encounter.' }, { status: 400 })
+  }
+
   const { data, error } = await admin
     .from('encounter_participants')
     .insert({

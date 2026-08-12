@@ -12,11 +12,13 @@ export async function GET(req: NextRequest) {
   const campaignId = req.nextUrl.searchParams.get('campaign_id')
   if (!campaignId) return NextResponse.json({ error: 'campaign_id required' }, { status: 400 })
 
-  // Anyone tagged to this campaign, plus global lore characters (no campaign tag)
+  // Anyone tagged to this campaign, plus global lore characters (no campaign tag) —
+  // hidden characters are excluded entirely, so they can never be selected by mistake.
   const { data: candidates, error } = await admin
     .from('characters')
     .select('id, name, avatar_url')
     .or(`campaign_id.eq.${campaignId},campaign_id.is.null`)
+    .neq('visibility', 'hidden')
     .order('name')
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
