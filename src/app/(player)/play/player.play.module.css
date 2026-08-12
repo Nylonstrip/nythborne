@@ -110,3 +110,88 @@
   font-size: 13px;
   color: var(--text-faint);
 }
+
+.actionPanel {
+  padding: 20px;
+  background: rgba(217, 179, 108, 0.06);
+  border: 1px solid #d9b36c;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.actionRow {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.actionSelect {
+  flex: 1;
+  min-width: 160px;
+  background: transparent;
+  border: 1px solid var(--border-bright);
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: 4px;
+}
+
+.actionBtn {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: #d9b36c;
+  color: #0a0a12;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.actionMsg {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--crystal-3);
+}
+
+.requestLog {
+  margin-bottom: 24px;
+}
+
+.requestRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.statusTag {
+  font-family: var(--font-display);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 3px;
+}
+
+.status_pending {
+  color: #d9b36c;
+  border: 1px solid #d9b36c;
+}
+
+.status_approved {
+  color: #7de8d4;
+  border: 1px solid #7de8d4;
+}
+
+.status_denied {
+  color: #e05c5c;
+  border: 1px solid #e05c5c;
+}

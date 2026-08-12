@@ -4,6 +4,7 @@ import styles from './admin.module.css'
 const NAV_ITEMS = [
   { href: '/admin', label: 'Dashboard' },
   { href: '/admin/play', label: 'Play' },
+  { href: '/admin/actions', label: 'Actions' },
   { href: '/admin/nations', label: 'Nations' },
   { href: '/admin/characters', label: 'Characters' },
   { href: '/admin/relics', label: 'Relics' },

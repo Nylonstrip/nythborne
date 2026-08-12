@@ -26,12 +26,22 @@ interface Participant {
   characters: CharacterMini
 }
 
+interface ActionRequest {
+  id: string
+  status: string
+  created_at: string
+  actions: { name: string; description: string | null }
+  encounter_participants: { characters: { name: string } }
+  target: { characters: { name: string } } | null
+}
+
 export default function PlayBoard({ campaign }: { campaign: { id: string; name: string } | null }) {
   const [participants, setParticipants] = useState<Participant[]>([])
   const [available, setAvailable] = useState<CharacterMini[]>([])
   const [selectedToAdd, setSelectedToAdd] = useState('')
   const [addError, setAddError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [requests, setRequests] = useState<ActionRequest[]>([])
 
   const fetchParticipants = useCallback(async () => {
     if (!campaign) return
@@ -47,10 +57,22 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
     setAvailable(d.characters ?? [])
   }, [campaign])
 
+  const fetchRequests = useCallback(async () => {
+    if (!campaign) return
+    const res = await fetch(`/api/admin/action-requests?campaign_id=${campaign.id}`)
+    const d = await res.json()
+    setRequests(d.requests ?? [])
+  }, [campaign])
+
   useEffect(() => {
     fetchParticipants()
     fetchAvailable()
-  }, [fetchParticipants, fetchAvailable])
+    fetchRequests()
+    // Polling, not true realtime — GM auth doesn't carry a Supabase session,
+    // so RLS-gated realtime channels aren't usable here yet.
+    const interval = setInterval(fetchRequests, 5000)
+    return () => clearInterval(interval)
+  }, [fetchParticipants, fetchAvailable, fetchRequests])
 
   async function addToEncounter() {
     if (!campaign || !selectedToAdd) return
@@ -127,6 +149,17 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
     setBusy(false)
   }
 
+  async function resolveRequest(id: string, status: 'approved' | 'denied') {
+    setBusy(true)
+    await fetch(`/api/admin/action-requests/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status }),
+    })
+    await fetchRequests()
+    setBusy(false)
+  }
+
   if (!campaign) {
     return (
       <div className={styles.formPage}>
@@ -139,12 +172,34 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
   }
 
   const current = participants.find(p => p.is_current_turn)
+  const pendingRequests = requests.filter(r => r.status === 'pending')
 
   return (
     <div className={styles.formPage}>
       <div className={styles.pageHeader}>
         <h1 className={styles.pageTitle}>Play — {campaign.name}</h1>
       </div>
+
+      {/* Pending action requests */}
+      {pendingRequests.length > 0 && (
+        <div className={styles.formSection}>
+          <h2 className={styles.formSectionTitle}>Pending Actions ({pendingRequests.length})</h2>
+          {pendingRequests.map(r => (
+            <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid #333' }}>
+              <div>
+                <strong>{r.encounter_participants.characters.name}</strong> wants to use{' '}
+                <strong>{r.actions.name}</strong>
+                {r.target && <> on <strong>{r.target.characters.name}</strong></>}
+                {r.actions.description && <p style={{ fontSize: '13px', color: '#aaa' }}>{r.actions.description}</p>}
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button className={styles.saveBtn} onClick={() => resolveRequest(r.id, 'approved')} disabled={busy}>Approve</button>
+                <button className={styles.deleteBtn} onClick={() => resolveRequest(r.id, 'denied')} disabled={busy}>Deny</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Current turn spotlight */}
       <div className={styles.formSection}>
