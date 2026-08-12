@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-admin'
-import { cookies } from 'next/headers'
 
-function isAuthenticated() { return cookies().get('gm_session')?.value === 'authenticated' }
 
 async function resolveName(admin: ReturnType<typeof createAdminClient>, table: string, id: string): Promise<string> {
   if (table === 'characters') {
@@ -29,7 +27,6 @@ async function resolveName(admin: ReturnType<typeof createAdminClient>, table: s
 }
 
 export async function GET(req: NextRequest) {
-  if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const id = req.nextUrl.searchParams.get('id')
   const table = req.nextUrl.searchParams.get('table')

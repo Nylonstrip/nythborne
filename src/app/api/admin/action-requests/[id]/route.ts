@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-admin'
-import { cookies } from 'next/headers'
 
-function isAuthenticated() {
-  return cookies().get('gm_session')?.value === 'authenticated'
-}
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
-  if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const { status, gm_notes } = await req.json()
 

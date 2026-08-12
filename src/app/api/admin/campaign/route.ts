@@ -1,17 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-admin'
-import { cookies } from 'next/headers'
 
-function isAuthenticated(req: NextRequest) {
-  const cookieHeader = req.headers.get('cookie')
-  const cookieValue = cookies().get('gm_session')?.value
-  console.log('[DEBUG] raw cookie header:', cookieHeader)
-  console.log('[DEBUG] gm_session via cookies():', cookieValue)
-  return cookieValue === 'authenticated'
-}
 
 export async function GET(req: NextRequest) {
-  if (!isAuthenticated(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const id = req.nextUrl.searchParams.get('id')
 
@@ -34,7 +25,6 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  if (!isAuthenticated(req)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const body = await req.json()
 

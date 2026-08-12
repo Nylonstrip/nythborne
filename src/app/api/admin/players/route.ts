@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-admin'
-import { cookies } from 'next/headers'
 
 export async function POST(req: NextRequest) {
-  // Verify GM session
-  const cookieStore = await cookies()
-  const session = cookieStore.get('gm_session')
-  if (!session || session.value !== 'authenticated') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
 
   const { displayName, email, password, characterId } = await req.json()
 

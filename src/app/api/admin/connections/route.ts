@@ -1,13 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-admin'
-import { cookies } from 'next/headers'
-
-function isAuthenticated() {
-  return cookies().get('gm_session')?.value === 'authenticated'
-}
 
 export async function POST(req: NextRequest) {
-  if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const body = await req.json()
   const { from_table, from_id, to_table, to_id, relationship, notes } = body
@@ -27,7 +21,6 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const admin = createAdminClient()
 
