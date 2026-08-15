@@ -13,6 +13,10 @@ interface CharacterMini {
   mental: number
   resonance: number
   alignment: number
+  health: number
+  max_health: number
+  mana: number
+  max_mana: number
 }
 
 interface Participant {
@@ -32,6 +36,7 @@ interface ActionOption {
 interface MyRequest {
   id: string
   status: string
+  outcome_description: string | null
   created_at: string
   actions: { name: string }
 }
@@ -74,7 +79,7 @@ export default function PlayPage() {
     if (activeCampaign) {
       const { data } = await supabase
         .from('encounter_participants')
-        .select('id, initiative_roll, initiative_total, is_current_turn, characters(id, name, avatar_url, level, mental, resonance, alignment)')
+        .select('id, initiative_roll, initiative_total, is_current_turn, characters(id, name, avatar_url, level, mental, resonance, alignment, health, max_health, mana, max_mana)')
         .eq('campaign_id', activeCampaign.id)
         .order('initiative_total', { ascending: false, nullsFirst: false })
 
@@ -90,7 +95,7 @@ export default function PlayPage() {
 
         const { data: reqData } = await supabase
           .from('action_requests')
-          .select('id, status, created_at, actions(name)')
+          .select('id, status, outcome_description, created_at, actions(name)')
           .eq('campaign_id', activeCampaign.id)
           .order('created_at', { ascending: false })
           .limit(5)
@@ -109,6 +114,7 @@ export default function PlayPage() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'campaigns' }, () => fetchAll())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'encounter_participants' }, () => fetchAll())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'action_requests' }, () => fetchAll())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'characters' }, () => fetchAll())
       .subscribe(status => setConnected(status === 'SUBSCRIBED'))
 
     return () => {
@@ -162,6 +168,7 @@ export default function PlayPage() {
               Level {current.characters.level} — Mental {current.characters.mental}/5,
               {' '}Resonance {current.characters.resonance}/5, Alignment {current.characters.alignment}/5
             </p>
+            <p>HP {current.characters.health}/{current.characters.max_health} — MP {current.characters.mana}/{current.characters.max_mana}</p>
           </div>
         </div>
       ) : (
@@ -201,7 +208,10 @@ export default function PlayPage() {
           <span className={styles.spotlightTag}>Recent Actions</span>
           {myRequests.map(r => (
             <div key={r.id} className={styles.requestRow}>
-              <span>{r.actions.name}</span>
+              <span>
+                {r.actions.name}
+                {r.outcome_description && <span style={{ opacity: 0.7 }}> — {r.outcome_description}</span>}
+              </span>
               <span className={`${styles.statusTag} ${styles['status_' + r.status]}`}>{r.status}</span>
             </div>
           ))}
@@ -211,13 +221,19 @@ export default function PlayPage() {
       {participants.length > 0 && (
         <div className={styles.rosterList}>
           {participants.map(p => (
-            <div key={p.id} className={`${styles.rosterRow} ${p.is_current_turn ? styles.rosterRowActive : ''}`}>
+            <div key={p.id} className={`${styles.rosterRow} ${p.is_current_turn ? styles.rosterRowActive : ''} ${p.characters.id === myCharacterId ? styles.rosterRowMine : ''}`}>
               {p.characters.avatar_url ? (
                 <img src={p.characters.avatar_url} alt={p.characters.name} className={styles.rosterImg} />
               ) : (
                 <div className={styles.rosterImgPlaceholder} />
               )}
-              <span className={styles.rosterName}>{p.characters.name}</span>
+              <span className={styles.rosterName}>
+                {p.characters.name}
+                {p.characters.id === myCharacterId && <span className={styles.youBadge}>YOU</span>}
+              </span>
+              <span className={styles.rosterMeta}>
+                HP {p.characters.health}/{p.characters.max_health} · MP {p.characters.mana}/{p.characters.max_mana}
+              </span>
               <span className={styles.rosterMeta}>{p.initiative_total ?? '—'}</span>
             </div>
           ))}

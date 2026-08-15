@@ -31,6 +31,9 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
     e.preventDefault()
     setStatus('saving')
     const formData = new FormData(e.currentTarget)
+    const inventoryRaw = (formData.get('inventory') as string) ?? ''
+    const inventory = inventoryRaw.split('\n').map(s => s.trim()).filter(Boolean)
+
     const payload = {
       name: formData.get('name'),
       is_player_character: formData.get('is_player_character') === 'on',
@@ -45,6 +48,11 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
       background: formData.get('background') || null,
       visibility: formData.get('visibility'),
       gm_notes: formData.get('gm_notes') || null,
+      health: parseInt(formData.get('health') as string) || 0,
+      max_health: parseInt(formData.get('max_health') as string) || 0,
+      mana: parseInt(formData.get('mana') as string) || 0,
+      max_mana: parseInt(formData.get('max_mana') as string) || 0,
+      inventory,
     }
 
     const res = await fetch(
@@ -124,6 +132,7 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
           )}
         </div>
       )}
+
       <form onSubmit={handleSubmit}>
 
         {/* Identity */}
@@ -139,6 +148,44 @@ export default function CharacterForm({ nyth: character }: { nyth?: Character })
             </div>
             <div className={styles.formGridFull}>
               <TextareaField label="Background" name="background" defaultValue={character?.background ?? ''} />
+            </div>
+          </div>
+        </div>
+
+        {/* Vitals & Inventory */}
+        <div className={styles.formSection}>
+          <h2 className={styles.formSectionTitle}>Vitals & Inventory</h2>
+          <div className={styles.formGrid}>
+            <div>
+              <label htmlFor="health" style={{ display: 'block', marginBottom: '6px' }}>Health</label>
+              <input id="health" name="health" type="number" defaultValue={character?.health ?? 10}
+                style={{ width: '100%', padding: '8px 10px', background: 'transparent', border: '1px solid #444', color: 'inherit', borderRadius: '4px' }} />
+            </div>
+            <div>
+              <label htmlFor="max_health" style={{ display: 'block', marginBottom: '6px' }}>Max Health</label>
+              <input id="max_health" name="max_health" type="number" defaultValue={character?.max_health ?? 10}
+                style={{ width: '100%', padding: '8px 10px', background: 'transparent', border: '1px solid #444', color: 'inherit', borderRadius: '4px' }} />
+            </div>
+            <div>
+              <label htmlFor="mana" style={{ display: 'block', marginBottom: '6px' }}>Mana</label>
+              <input id="mana" name="mana" type="number" defaultValue={character?.mana ?? 5}
+                style={{ width: '100%', padding: '8px 10px', background: 'transparent', border: '1px solid #444', color: 'inherit', borderRadius: '4px' }} />
+            </div>
+            <div>
+              <label htmlFor="max_mana" style={{ display: 'block', marginBottom: '6px' }}>Max Mana</label>
+              <input id="max_mana" name="max_mana" type="number" defaultValue={character?.max_mana ?? 5}
+                style={{ width: '100%', padding: '8px 10px', background: 'transparent', border: '1px solid #444', color: 'inherit', borderRadius: '4px' }} />
+            </div>
+            <div className={styles.formGridFull}>
+              <label htmlFor="inventory" style={{ display: 'block', marginBottom: '6px' }}>Inventory (one item per line)</label>
+              <textarea
+                id="inventory"
+                name="inventory"
+                rows={4}
+                defaultValue={(character?.inventory ?? []).join('\n')}
+                placeholder={'Traveling cloak\nHealing draught\n30 bells'}
+                style={{ width: '100%', padding: '8px 10px', background: 'transparent', border: '1px solid #444', color: 'inherit', borderRadius: '4px' }}
+              />
             </div>
           </div>
         </div>

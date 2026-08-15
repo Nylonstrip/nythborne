@@ -85,6 +85,21 @@
   border-color: var(--crystal-3);
 }
 
+.rosterRowMine {
+  border-left: 3px solid #d9b36c;
+}
+
+.youBadge {
+  font-family: var(--font-display);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  background: #d9b36c;
+  color: #0a0a12;
+  padding: 2px 6px;
+  border-radius: 3px;
+  margin-left: 8px;
+}
+
 .rosterImg {
   width: 36px;
   height: 36px;

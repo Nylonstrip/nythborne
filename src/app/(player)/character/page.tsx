@@ -22,6 +22,11 @@ interface CharacterData {
   traits: string[]
   approval_status: string
   avatar_url: string | null
+  health: number
+  max_health: number
+  mana: number
+  max_mana: number
+  inventory: string[]
 }
 
 interface CampaignData {
@@ -252,6 +257,33 @@ export default function CharacterPage() {
               </div>
             </div>
           </section>
+
+          <section className={styles.panel}>
+            <span className={styles.panelLabel}>Vitals</span>
+            <div className={styles.vitalRow}>
+              <span className={styles.statLabel}>Health</span>
+              <div className={styles.vitalBar}>
+                <div className={styles.vitalFillHealth} style={{ width: `${Math.max(0, Math.min(100, (character.health / Math.max(1, character.max_health)) * 100))}%` }} />
+              </div>
+              <span className={styles.vitalNum}>{character.health}/{character.max_health}</span>
+            </div>
+            <div className={styles.vitalRow}>
+              <span className={styles.statLabel}>Mana</span>
+              <div className={styles.vitalBar}>
+                <div className={styles.vitalFillMana} style={{ width: `${Math.max(0, Math.min(100, (character.mana / Math.max(1, character.max_mana)) * 100))}%` }} />
+              </div>
+              <span className={styles.vitalNum}>{character.mana}/{character.max_mana}</span>
+            </div>
+          </section>
+
+          {character.inventory?.length > 0 && (
+            <section className={styles.panel}>
+              <span className={styles.panelLabel}>Inventory</span>
+              <ul className={styles.traitList}>
+                {character.inventory.map((item, i) => <li key={i}>{item}</li>)}
+              </ul>
+            </section>
+          )}
 
           <section className={styles.panel}>
             <span className={styles.panelLabel}>Level {character.level}</span>

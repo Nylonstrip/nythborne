@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-admin'
+import { cookies } from 'next/headers'
 
-
-
+function isAuthenticated() {
+  return cookies().get('gm_session')?.value === 'authenticated'
+}
 
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const { error } = await admin.from('encounter_participants').delete().eq('id', params.id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
@@ -12,6 +15,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  if (!isAuthenticated()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const body = await req.json()
 
@@ -29,7 +33,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       .from('encounter_participants')
       .update({ initiative_roll: roll, initiative_total: roll + modifier })
       .eq('id', params.id)
-      .select('*, characters(id, name, avatar_url, level, mental, resonance, alignment, is_player_character)')
+      .select('*, characters(id, name, avatar_url, level, mental, resonance, alignment, is_player_character, health, max_health, mana, max_mana)')
       .single()
 
     if (error) return NextResponse.json({ error: error.message }, { status: 400 })
@@ -41,7 +45,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     .from('encounter_participants')
     .update(body)
     .eq('id', params.id)
-    .select('*, characters(id, name, avatar_url, level, mental, resonance, alignment, is_player_character)')
+    .select('*, characters(id, name, avatar_url, level, mental, resonance, alignment, is_player_character, health, max_health, mana, max_mana)')
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })

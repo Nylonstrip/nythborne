@@ -108,6 +108,11 @@ export interface Character {
   traits: string[]
   approval_status: 'pending' | 'approved' | 'rejected'
   avatar_url: string | null
+  health: number
+  max_health: number
+  mana: number
+  max_mana: number
+  inventory: string[]
   created_at: string
   updated_at: string
 }

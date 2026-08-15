@@ -1,18 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase-admin'
 
-
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   const admin = createAdminClient()
-  const { status, gm_notes } = await req.json()
+  const body = await req.json()
 
-  if (!['approved', 'denied'].includes(status)) {
-    return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+  const updates: Record<string, unknown> = {}
+  if (body.status) {
+    if (!['approved', 'denied'].includes(body.status)) {
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
+    }
+    updates.status = body.status
+    updates.resolved_at = new Date().toISOString()
+  }
+  if (body.outcome_description !== undefined) {
+    updates.outcome_description = body.outcome_description
+  }
+  if (body.gm_notes !== undefined) {
+    updates.gm_notes = body.gm_notes
   }
 
   const { data, error } = await admin
     .from('action_requests')
-    .update({ status, gm_notes: gm_notes || null, resolved_at: new Date().toISOString() })
+    .update(updates)
     .eq('id', params.id)
     .select()
     .single()

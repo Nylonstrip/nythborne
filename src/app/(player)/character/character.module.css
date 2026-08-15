@@ -59,6 +59,41 @@
   margin-bottom: 12px;
 }
 
+.vitalRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.vitalBar {
+  flex: 1;
+  height: 10px;
+  background: var(--bg-alt, #100e1b);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.vitalFillHealth {
+  height: 100%;
+  background: #e0556b;
+  transition: width 0.3s ease;
+}
+
+.vitalFillMana {
+  height: 100%;
+  background: #4fa8e3;
+  transition: width 0.3s ease;
+}
+
+.vitalNum {
+  font-size: 13px;
+  color: var(--text-dim);
+  min-width: 50px;
+  text-align: right;
+}
+
 .pointsNotice {
   font-size: 13px;
   color: var(--crystal-3);

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
+import Link from 'next/link'
 import styles from '@/app/admin/shared.module.css'
 import playStyles from './play.module.css'
 
@@ -13,6 +14,10 @@ interface CharacterMini {
   resonance?: number
   alignment?: number
   is_player_character?: boolean
+  health?: number
+  max_health?: number
+  mana?: number
+  max_mana?: number
 }
 
 interface Participant {
@@ -26,10 +31,16 @@ interface Participant {
   characters: CharacterMini
 }
 
+interface ActionOption {
+  id: string
+  name: string
+  description: string | null
+}
+
 interface ActionRequest {
   id: string
   status: string
-  created_at: string
+  outcome_description: string | null
   actions: { name: string; description: string | null }
   encounter_participants: { characters: { name: string } }
   target: { characters: { name: string } } | null
@@ -42,6 +53,9 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
   const [addError, setAddError] = useState('')
   const [busy, setBusy] = useState(false)
   const [requests, setRequests] = useState<ActionRequest[]>([])
+  const [allActions, setAllActions] = useState<ActionOption[]>([])
+  const [npcAction, setNpcAction] = useState('')
+  const [npcTarget, setNpcTarget] = useState('')
 
   const fetchParticipants = useCallback(async () => {
     if (!campaign) return
@@ -64,15 +78,20 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
     setRequests(d.requests ?? [])
   }, [campaign])
 
+  const fetchActions = useCallback(async () => {
+    const res = await fetch('/api/admin/actions')
+    const d = await res.json()
+    setAllActions(d.actions ?? [])
+  }, [])
+
   useEffect(() => {
     fetchParticipants()
     fetchAvailable()
     fetchRequests()
-    // Polling, not true realtime — GM auth doesn't carry a Supabase session,
-    // so RLS-gated realtime channels aren't usable here yet.
+    fetchActions()
     const interval = setInterval(fetchRequests, 5000)
     return () => clearInterval(interval)
-  }, [fetchParticipants, fetchAvailable, fetchRequests])
+  }, [fetchParticipants, fetchAvailable, fetchRequests, fetchActions])
 
   async function addToEncounter() {
     if (!campaign || !selectedToAdd) return
@@ -137,6 +156,21 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
     setBusy(false)
   }
 
+  async function setHealthMana(id: string, field: 'health' | 'mana', value: number) {
+    // NOTE: health/mana live on the character row, not the participant row —
+    // update via the character's own PATCH endpoint.
+    const participant = participants.find(p => p.id === id)
+    if (!participant) return
+    setBusy(true)
+    await fetch(`/api/admin/characters/${participant.character_id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ [field]: value }),
+    })
+    await fetchParticipants()
+    setBusy(false)
+  }
+
   async function nextTurn() {
     if (!campaign) return
     setBusy(true)
@@ -160,6 +194,34 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
     setBusy(false)
   }
 
+  async function saveOutcome(id: string, text: string) {
+    await fetch(`/api/admin/action-requests/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ outcome_description: text }),
+    })
+    await fetchRequests()
+  }
+
+  async function declareNpcAction() {
+    if (!campaign || !current || !npcAction || !npcTarget) return
+    setBusy(true)
+    await fetch('/api/admin/action-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        campaign_id: campaign.id,
+        participant_id: current.id,
+        action_id: npcAction,
+        target_participant_id: npcTarget,
+      }),
+    })
+    setNpcAction('')
+    setNpcTarget('')
+    await fetchRequests()
+    setBusy(false)
+  }
+
   if (!campaign) {
     return (
       <div className={styles.formPage}>
@@ -172,7 +234,7 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
   }
 
   const current = participants.find(p => p.is_current_turn)
-  const pendingRequests = requests.filter(r => r.status === 'pending')
+  const currentIsNpc = current && current.characters.is_player_character === false
 
   return (
     <div className={styles.formPage}>
@@ -180,22 +242,37 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
         <h1 className={styles.pageTitle}>Play — {campaign.name}</h1>
       </div>
 
-      {/* Pending action requests */}
-      {pendingRequests.length > 0 && (
+      {/* Action log — all requests, outcome editable on every one */}
+      {requests.length > 0 && (
         <div className={styles.formSection}>
-          <h2 className={styles.formSectionTitle}>Pending Actions ({pendingRequests.length})</h2>
-          {pendingRequests.map(r => (
-            <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid #333' }}>
-              <div>
-                <strong>{r.encounter_participants.characters.name}</strong> wants to use{' '}
-                <strong>{r.actions.name}</strong>
-                {r.target && <> on <strong>{r.target.characters.name}</strong></>}
-                {r.actions.description && <p style={{ fontSize: '13px', color: '#aaa' }}>{r.actions.description}</p>}
+          <h2 className={styles.formSectionTitle}>Action Log</h2>
+          {requests.map(r => (
+            <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', padding: '10px 0', borderTop: '1px solid #333', flexWrap: 'wrap' }}>
+              <div style={{ minWidth: '180px' }}>
+                <strong>{r.encounter_participants.characters.name}</strong> — {r.actions.name}
+                {r.target && <> → <strong>{r.target.characters.name}</strong></>}
               </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button className={styles.saveBtn} onClick={() => resolveRequest(r.id, 'approved')} disabled={busy}>Approve</button>
-                <button className={styles.deleteBtn} onClick={() => resolveRequest(r.id, 'denied')} disabled={busy}>Deny</button>
-              </div>
+              <input
+                type="text"
+                defaultValue={r.outcome_description ?? ''}
+                placeholder="Outcome (e.g. 5 damage)"
+                onBlur={e => saveOutcome(r.id, e.target.value)}
+                style={{ flex: 1, minWidth: '160px', background: 'transparent', border: '1px solid #444', color: 'inherit', padding: '6px 10px', borderRadius: '4px' }}
+              />
+              {r.status === 'pending' ? (
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button className={styles.saveBtn} onClick={() => resolveRequest(r.id, 'approved')} disabled={busy}>Approve</button>
+                  <button className={styles.deleteBtn} onClick={() => resolveRequest(r.id, 'denied')} disabled={busy}>Deny</button>
+                </div>
+              ) : (
+                <span style={{
+                  fontSize: '11px', textTransform: 'uppercase', padding: '3px 8px', borderRadius: '3px',
+                  border: `1px solid ${r.status === 'approved' ? '#7de8d4' : '#e05c5c'}`,
+                  color: r.status === 'approved' ? '#7de8d4' : '#e05c5c',
+                }}>
+                  {r.status}
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -212,19 +289,43 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
               <div className={playStyles.spotlightPlaceholder}>No image</div>
             )}
             <div>
-              <h3 className={playStyles.spotlightName}>{current.characters.name}</h3>
+              <h3 className={playStyles.spotlightName}>
+                <Link href={`/admin/characters/${current.character_id}`} style={{ color: 'inherit' }}>
+                  {current.characters.name}
+                </Link>
+                {currentIsNpc && <span style={{ fontSize: '11px', marginLeft: '10px', opacity: 0.7 }}>(NPC)</span>}
+              </h3>
               {current.characters.level !== undefined && (
                 <p>
                   Level {current.characters.level} — Mental {current.characters.mental}/5,
                   {' '}Resonance {current.characters.resonance}/5, Alignment {current.characters.alignment}/5
                 </p>
               )}
+              <p>HP {current.characters.health}/{current.characters.max_health} — MP {current.characters.mana}/{current.characters.max_mana}</p>
               <p>Initiative: {current.initiative_total ?? '—'}</p>
             </div>
           </div>
         ) : (
           <p>No one&apos;s turn yet — click Next Turn to begin.</p>
         )}
+
+        {currentIsNpc && current && (
+          <div style={{ marginTop: '16px', padding: '14px', border: '1px dashed #444', borderRadius: '6px' }}>
+            <p style={{ fontSize: '13px', marginBottom: '8px' }}>Declare this NPC&apos;s action (auto-approved):</p>
+            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+              <select value={npcAction} onChange={e => setNpcAction(e.target.value)} style={{ background: 'transparent', color: '#e5d5b0', border: '1px solid #444', padding: '8px 12px', borderRadius: '4px' }}>
+                <option value="">Action...</option>
+                {allActions.filter(a => !a.description || true).map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+              </select>
+              <select value={npcTarget} onChange={e => setNpcTarget(e.target.value)} style={{ background: 'transparent', color: '#e5d5b0', border: '1px solid #444', padding: '8px 12px', borderRadius: '4px' }}>
+                <option value="">Target...</option>
+                {participants.map(p => <option key={p.id} value={p.id}>{p.characters.name}</option>)}
+              </select>
+              <button className={styles.saveBtn} onClick={declareNpcAction} disabled={busy || !npcAction || !npcTarget}>Declare</button>
+            </div>
+          </div>
+        )}
+
         <div className={styles.formActions} style={{ marginTop: '16px' }}>
           <button className={styles.saveBtn} onClick={nextTurn} disabled={busy || participants.length === 0}>
             Next Turn
@@ -268,7 +369,9 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
                 <div className={playStyles.rosterImgPlaceholder} />
               )}
               <div className={playStyles.rosterInfo}>
-                <span className={playStyles.rosterName}>{p.characters.name}</span>
+                <span className={playStyles.rosterName}>
+                  <Link href={`/admin/characters/${p.character_id}`} style={{ color: 'inherit' }}>{p.characters.name}</Link>
+                </span>
                 <span className={playStyles.rosterMeta}>
                   Roll: {p.initiative_roll ?? '—'} + Mod:{' '}
                   <input
@@ -278,6 +381,23 @@ export default function PlayBoard({ campaign }: { campaign: { id: string; name: 
                     style={{ width: '48px', background: 'transparent', border: '1px solid #444', color: 'inherit' }}
                   />
                   {' '}= {p.initiative_total ?? '—'}
+                </span>
+                <span className={playStyles.rosterMeta}>
+                  HP:{' '}
+                  <input
+                    type="number"
+                    defaultValue={p.characters.health}
+                    onBlur={e => setHealthMana(p.id, 'health', parseInt(e.target.value) || 0)}
+                    style={{ width: '48px', background: 'transparent', border: '1px solid #444', color: 'inherit' }}
+                  />
+                  /{p.characters.max_health} — MP:{' '}
+                  <input
+                    type="number"
+                    defaultValue={p.characters.mana}
+                    onBlur={e => setHealthMana(p.id, 'mana', parseInt(e.target.value) || 0)}
+                    style={{ width: '48px', background: 'transparent', border: '1px solid #444', color: 'inherit' }}
+                  />
+                  /{p.characters.max_mana}
                 </span>
               </div>
               <button className={styles.saveBtn} onClick={() => rollInitiative(p.id)} disabled={busy}>
